@@ -6,11 +6,14 @@ module.exports = {
     commonjs: true,
     es6: true
   },
-  plugins: ['prettier', 'builtin-compat'],
-  extends: ['airbnb-base', 'eslint-config-prettier'],
+  plugins: ['prettier'],
+  extends: [
+    'airbnb-base',
+    'eslint-config-prettier',
+    'plugin:compat/recommended'
+  ],
   rules: {
     'prettier/prettier': 'error',
-    'builtin-compat/no-incompatible-builtins': 'error',
     'no-return-assign': ['error', 'except-parens'],
     'no-shadow': 'off',
     'no-param-reassign': 'off',
@@ -19,10 +22,9 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
   },
   settings: {
-    'builtin-compat-ignore': [
+    polyfills: [
       // App which dependence this lib should pollyfill these methods:
-      'assign',
-      'startsWith'
+      'Symbol'
     ]
   },
   parserOptions: {
