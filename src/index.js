@@ -16,8 +16,10 @@ export function emit(ee, key, ...args) {
   (ee.get(key) || []).forEach(h => h(...args));
 }
 
-export function emitError(ee, ...args) {
-  emit(ee, errorEvent, ...args);
+export function emitError(ee, err) {
+  const handlerSet = ee.get(errorEvent);
+  if (!handlerSet || !handlerSet.size) throw err;
+  handlerSet.forEach(h => h(err));
 }
 
 export function on(ee, key, handler) {
