@@ -7,8 +7,10 @@
   "browser": "dist/event-emitter.esm.js",
   "unpkg": "dist/event-emitter.umd.min.js",
   "jsdelivr": "dist/event-emitter.umd.min.js",
+  "types": "index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "sideEffects": false,
   "scripts": {
