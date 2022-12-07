@@ -1,6 +1,6 @@
 {
   "name": "@for-fun/event-emitter",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "event-emitter",
   "main": "dist/event-emitter.cjs.js",
   "module": "dist/event-emitter.esm.js",
