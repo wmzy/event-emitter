@@ -20,17 +20,17 @@ export type EventEmitter<T extends ET> = {
   }
 };
 
-export type Handler<P extends any[]> = (...args: P) => void;
-export type ErrorHandler = (err: Error) => void;
+export type Handler<P extends any[]> = (...args: P) => any;
+export type ErrorHandler = (err: Error) => any;
 export type OffFunction = () => void;
 
 export function create<T extends ET>(): EventEmitter<T>;
-export function emit<E extends EventEmitter<ET>, K extends keyof E[S]>(ee: E, key: K, ...args: E[S][K]): void;
-export function emitError(ee: EventEmitter<ET>, err: Error): void;
-export function on<E extends EventEmitter<ET>, K extends keyof E[S]>(ee: E, key: K, handler: Handler<E[S][K]>): OffFunction;
-export function onError(ee: EventEmitter<ET>, handler: ErrorHandler): OffFunction;
-export function once<E extends EventEmitter<ET>, K extends keyof E[S]>(ee: E, key: K, handler: Handler<E[S][K]>): OffFunction;
-export function onceError(ee: EventEmitter<ET>, handler: ErrorHandler): OffFunction;
+export function emit<E extends EventEmitter<any>, K extends keyof E[S]>(ee: E, key: K, ...args: E[S][K]): void;
+export function emitError(ee: EventEmitter<any>, err: Error): void;
+export function on<E extends EventEmitter<any>, K extends keyof E[S]>(ee: E, key: K, handler: Handler<E[S][K]>): OffFunction;
+export function onError(ee: EventEmitter<any>, handler: ErrorHandler): OffFunction;
+export function once<E extends EventEmitter<any>, K extends keyof E[S]>(ee: E, key: K, handler: Handler<E[S][K]>): OffFunction;
+export function onceError(ee: EventEmitter<any>, handler: ErrorHandler): OffFunction;
 
 export function bindContext(context: any): (func: Function) => Function;
 

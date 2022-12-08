@@ -15,6 +15,7 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     'no-return-assign': ['error', 'except-parens'],
+    'no-void': 'off',
     'no-shadow': 'off',
     'no-param-reassign': 'off',
     'no-use-before-define': ['error', {functions: false}],
@@ -28,6 +29,6 @@ module.exports = {
     ]
   },
   parserOptions: {
-    parser: 'babel-eslint'
+    parser: '@babel/eslint-parser'
   }
 };

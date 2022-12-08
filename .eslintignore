@@ -2,3 +2,4 @@
 **/.eslintrc.js
 dist
 node_modules
+rollup.config.mjs

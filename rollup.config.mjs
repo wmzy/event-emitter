@@ -1,6 +1,11 @@
-import babel from 'rollup-plugin-babel';
-import {terser} from 'rollup-plugin-terser';
-import pkg from './package.json';
+import babel from '@rollup/plugin-babel';
+// import terser from '@rollup/plugin-terser';
+// import pkg from './package.json' assert {type: "json"};
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const terser = require('@rollup/plugin-terser');
+const pkg = require('./package.json');
 
 const banner = `
 /*!
