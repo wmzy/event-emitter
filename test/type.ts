@@ -1,6 +1,8 @@
-import {on, emit, create, once, emitError} from '@/index';
+import {on, emit, create, once, emitError, createAndBind} from '@/index';
 
 const ee = create<'a' | ['b', ['c' | 'd', number]]>();
+const bee = createAndBind<'a' | ['b', ['c' | 'd', number]]>();
+
 const s = Symbol();
 create<'a' | typeof s | [typeof s, ['']] | ['b', []]>();
 // @ts-expect-error
@@ -13,7 +15,8 @@ const once1: typeof on<TEE, 'a'> = once<TEE, 'a'>;
 // @ts-expect-error
 const once2: typeof on<TEE, 'a'> = once<TEE, 'b'>;
 
-on(ee, 'a', () => {})
+on(ee, 'a', () => {});
+bee.on('a', () => {});
 // @ts-expect-error
 on(ee, 'a', (a) => {})
 
@@ -40,3 +43,7 @@ emitError(ee, new Error());
 emitError(ee, new Error(), 0);
 // @ts-expect-error
 emitError(ee, 0);
+
+const ee2 = create();
+emit(ee2, 'change', 1);
+on(ee2, 'change', (v) => {});
