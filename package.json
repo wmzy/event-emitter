@@ -14,13 +14,12 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "commit": "lint-staged && git-cz -n",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
     "build": "rollup -c",
-    "prepublishOnly": "npm test && rimraf dist && npm run build",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "lint": "eslint --fix src test *.js",
-    "test": "tsc && cross-env NODE_ENV=test nyc mocha -r @babel/register --recursive --exclude mock --exclude *.ts --exclude fixtures -r should -r should-sinon",
-    "start": "npm test -- --watch"
+    "prepublishOnly": "pnpm run test && rimraf dist && pnpm run build",
+    "lint": "eslint --fix src test *.js"
   },
   "repository": {
     "type": "git",
@@ -42,6 +41,7 @@
     "@babel/register": "^7.22.5",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-terser": "^0.4.3",
+    "@vitest/coverage-v8": "^4.1.0",
     "commitizen": "^4.3.0",
     "coveralls": "^3.1.1",
     "cross-env": "^7.0.3",
@@ -63,7 +63,8 @@
     "should": "^13.2.3",
     "should-sinon": "0.0.6",
     "sinon": "^15.2.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "vitest": "^4.1.0"
   },
   "lint-staged": {
     "*.js": [
