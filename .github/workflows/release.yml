@@ -6,6 +6,7 @@ on:
     paths:
       - "src/**"
       - "package.json"
+      - "index.d.ts"
       - ".github/workflows/release.yml"
 
 permissions:
