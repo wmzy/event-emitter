@@ -14,7 +14,7 @@ type Param<T extends ET, K extends Key<T>> = [K] extends [Extract<T, EventType>]
   ? []
   : Extract<T, [K, any[]]>[1];
 
-export type EventEmitter<T extends ET = [EventType, any[]]> = {
+export type EventEmitter<T extends ET = [any, any[]]> = {
   [s]: T
 };
 
@@ -33,7 +33,7 @@ export function onceError(ee: EventEmitter<any>, handler: ErrorHandler): OffFunc
 export function bindContext(context: any): (func: Function) => Function;
 
 export function createAndBind<T extends ET = [any, any[]]>(): {
-  emit<const K extends Key<T>>(key: K, ...args: Param<T>, K): void;
+  emit<const K extends Key<T>>(key: K, ...args: Param<T, K>): void;
   emitError(err: Error): void;
   on<const K extends Key<T>>(key: K, handler: Handler<Param<T, K>>): OffFunction;
   onError(handler: ErrorHandler): OffFunction;
