@@ -1,3 +1,4 @@
+[![npm](https://img.shields.io/npm/v/@for-fun/event-emitter)](https://www.npmjs.com/package/@for-fun/event-emitter)
 [![Build Status](https://travis-ci.org/wmzy/event-emitter.svg?branch=master)](https://travis-ci.org/wmzy/event-emitter)
 [![Coverage Status](https://coveralls.io/repos/github/wmzy/event-emitter/badge.svg?branch=master)](https://coveralls.io/github/wmzy/event-emitter?branch=master)
 [![install size](https://packagephobia.now.sh/badge?p=event-emitter)](https://packagephobia.now.sh/result?p=event-emitter)
