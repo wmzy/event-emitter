@@ -35,6 +35,10 @@ export default function() {
 
 This lib support [these browsers or devices](.broserslistrc) with [these methods or APIs](.eslintrc.js#L27) pollyfilled.
 
+## Design Note
+
+Wildcard subscriptions (e.g. `on(ee, '*', handler)`) are not supported by design. Path-level or hierarchical subscriptions are a consumer-side concern — for example, react-f0rm builds them on top of this emitter via `onPathEvent`.
+
 ## Workflow
 
 ```bash
