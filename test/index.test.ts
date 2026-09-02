@@ -43,6 +43,19 @@ describe('event-emitter', () => {
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
+    it('should be a no-op when emitting a key with no subscribers', () => {
+      const ee = create();
+      expect(() => emit(ee, 'missing', 1)).not.toThrow();
+    });
+
+    it('should be a no-op when every subscriber has unsubscribed', () => {
+      const ee = create();
+      const handler = vi.fn();
+      on(ee, 'a', handler)();
+      emit(ee, 'a', 'x');
+      expect(handler).not.toHaveBeenCalled();
+    });
+
     it('should emit multiple times but call handler once (once)', () => {
       const ee = create();
       const handler = vi.fn();

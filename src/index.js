@@ -13,7 +13,9 @@ export function create() {
 }
 
 export function emit(ee, key, ...args) {
-  (ee.get(key) || []).forEach(h => h(...args));
+  const set = ee.get(key);
+  if (!set || !set.size) return;
+  set.forEach(h => h(...args));
 }
 
 export function emitError(ee, err) {
