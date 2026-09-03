@@ -33,6 +33,7 @@ export function removeAllListeners<E extends EventEmitter<any>, const K extends 
 export function onError(ee: EventEmitter<any>, handler: ErrorHandler): OffFunction;
 export function once<E extends EventEmitter<any>, const K extends Key<E[S]>>(ee: E, key: K, handler: Handler<Param<E[S], K>>): OffFunction;
 export function onceError(ee: EventEmitter<any>, handler: ErrorHandler): OffFunction;
+export function setMaxListeners(ee: EventEmitter<any>, maxListeners: number): void;
 
 export function bindContext(context: any): (func: Function) => Function;
 
@@ -44,4 +45,5 @@ export function createAndBind<T extends ET = [any, any[]]>(): {
   onError(handler: ErrorHandler): OffFunction;
   once<const K extends Key<T>>(key: K, handler: Handler<Param<T, K>>): OffFunction;
   onceError(handler: ErrorHandler): OffFunction;
+  setMaxListeners(maxListeners: number): void;
 };

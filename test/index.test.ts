@@ -1,8 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  type MockInstance
+} from 'vitest';
 import {
   on,
   off,
   removeAllListeners,
+  setMaxListeners,
   emit,
   create,
   once,
@@ -250,6 +259,100 @@ describe('event-emitter', () => {
       expect(handler).toHaveBeenCalledWith(e);
       expect(() => emitError(ee, e)).toThrow('once error');
       expect(handler).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('maxListeners', () => {
+    let warn: MockInstance;
+
+    beforeEach(() => {
+      warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.unstubAllEnvs();
+    });
+
+    it('should not warn at or below the default limit of 10', () => {
+      const ee = create();
+      for (let i = 0; i < 10; i++) {
+        on(ee, 'a', () => {});
+      }
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should warn once per key when exceeding the default limit', () => {
+      const ee = create();
+      for (let i = 0; i < 11; i++) {
+        on(ee, 'a', () => {});
+      }
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('11');
+      expect(warn.mock.calls[0][0]).toContain('a');
+      for (let i = 0; i < 5; i++) {
+        on(ee, 'a', () => {});
+      }
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should warn once per key per emitter', () => {
+      const ee1 = create();
+      const ee2 = create();
+      for (let i = 0; i < 11; i++) {
+        on(ee1, 'a', () => {});
+        on(ee2, 'a', () => {});
+        on(ee1, 'b', () => {});
+      }
+      expect(warn).toHaveBeenCalledTimes(3);
+    });
+
+    it('should respect the limit set by setMaxListeners', () => {
+      const ee = create();
+      setMaxListeners(ee, 2);
+      on(ee, 'a', () => {});
+      on(ee, 'a', () => {});
+      expect(warn).not.toHaveBeenCalled();
+      on(ee, 'a', () => {});
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('3');
+    });
+
+    it('should allow disabling the warning with setMaxListeners(ee, 0)', () => {
+      const ee = create();
+      setMaxListeners(ee, 0);
+      for (let i = 0; i < 20; i++) {
+        on(ee, 'a', () => {});
+      }
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should count once() subscriptions like any other', () => {
+      const ee = create();
+      setMaxListeners(ee, 1);
+      once(ee, 'a', () => {});
+      once(ee, 'a', () => {});
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should expose setMaxListeners on the bound API', () => {
+      const bound = createAndBind();
+      bound.setMaxListeners(1);
+      bound.on('a', () => {});
+      bound.on('a', () => {});
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not warn in production', async () => {
+      vi.stubEnv('NODE_ENV', 'production');
+      vi.resetModules();
+      const mod = await import('../src');
+      const ee = mod.create();
+      for (let i = 0; i < 15; i++) {
+        mod.on(ee, 'a', () => {});
+      }
+      expect(warn).not.toHaveBeenCalled();
+      vi.resetModules();
     });
   });
 

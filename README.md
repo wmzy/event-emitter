@@ -75,6 +75,22 @@ onError(ee, err => report(err)); // receives every collected error
 emit(ee, 'a'); // throws the first error only when no error handler exists
 ```
 
+### maxListeners (DEV-only warning)
+
+When more than 10 listeners accumulate on one key — a common symptom of a
+missing unsubscribe — a `console.warn` fires once per key, in development
+only:
+
+```js
+setMaxListeners(ee, 20); // raise the limit for this emitter
+setMaxListeners(ee, 0); // disable the warning for this emitter
+```
+
+The gate is `process.env.NODE_ENV !== 'production'` (also silent when
+`process` is unavailable, e.g. the UMD build loaded directly in a
+browser). Production builds skip the whole check; `on` only pays a single
+boolean test.
+
 ## Workflow
 
 ```bash
