@@ -171,6 +171,60 @@ describe('event-emitter', () => {
     });
   });
 
+  describe('emit error isolation', () => {
+    it('should keep calling later handlers when a handler throws', () => {
+      const ee = create();
+      const errorHandler = vi.fn();
+      onError(ee, errorHandler);
+      const first = vi.fn();
+      const throwing = vi.fn(() => {
+        throw new Error('boom');
+      });
+      const last = vi.fn();
+      on(ee, 'a', first);
+      on(ee, 'a', throwing);
+      on(ee, 'a', last);
+      expect(() => emit(ee, 'a')).not.toThrow();
+      expect(first).toHaveBeenCalledTimes(1);
+      expect(throwing).toHaveBeenCalledTimes(1);
+      expect(last).toHaveBeenCalledTimes(1);
+    });
+
+    it('should report every collected error to the error channel', () => {
+      const ee = create();
+      const errorHandler = vi.fn();
+      onError(ee, errorHandler);
+      const err1 = new Error('one');
+      const err2 = new Error('two');
+      on(ee, 'a', () => {
+        throw err1;
+      });
+      on(ee, 'a', () => {
+        throw err2;
+      });
+      expect(() => emit(ee, 'a')).not.toThrow();
+      expect(errorHandler).toHaveBeenCalledTimes(2);
+      expect(errorHandler).toHaveBeenNthCalledWith(1, err1);
+      expect(errorHandler).toHaveBeenNthCalledWith(2, err2);
+    });
+
+    it('should rethrow the first error when there is no error handler', () => {
+      const ee = create();
+      const err1 = new Error('first');
+      const err2 = new Error('second');
+      const last = vi.fn();
+      on(ee, 'a', () => {
+        throw err1;
+      });
+      on(ee, 'a', () => {
+        throw err2;
+      });
+      on(ee, 'a', last);
+      expect(() => emit(ee, 'a')).toThrow('first');
+      expect(last).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('emitError', () => {
     it('should call error handler when emitError', () => {
       const ee = create();

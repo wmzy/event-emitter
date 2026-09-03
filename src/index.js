@@ -12,10 +12,27 @@ export function create() {
   return new Map();
 }
 
+// A throwing handler must not stop its peers: errors are collected while the
+// remaining handlers still run, then reported through emitError (the
+// errorEvent channel). If no error handler is subscribed either, the first
+// collected error is rethrown to the emit caller instead of being swallowed.
 export function emit(ee, key, ...args) {
   const set = ee.get(key);
   if (!set || !set.size) return;
-  set.forEach(h => h(...args));
+  let errors;
+  set.forEach(h => {
+    try {
+      h(...args);
+    } catch (err) {
+      if (errors) errors.push(err);
+      else errors = [err];
+    }
+  });
+  if (errors) {
+    for (const err of errors) {
+      emitError(ee, err);
+    }
+  }
 }
 
 export function emitError(ee, err) {

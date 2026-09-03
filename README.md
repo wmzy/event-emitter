@@ -62,6 +62,19 @@ removeAllListeners(ee); // same as off(ee)
 
 Both are no-ops for keys or handlers that were never subscribed.
 
+### Error isolation in emit
+
+Handlers of one emit are independent: if a handler throws, the remaining
+handlers of that same emit still run. The collected errors are reported
+one by one to the `errorEvent` channel (`onError`/`onceError`
+subscribers). If no error handler is subscribed either, `emit` rethrows
+the first collected error, so failures are never silently swallowed:
+
+```js
+onError(ee, err => report(err)); // receives every collected error
+emit(ee, 'a'); // throws the first error only when no error handler exists
+```
+
 ## Workflow
 
 ```bash
