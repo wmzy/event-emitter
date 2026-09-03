@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   on,
+  off,
+  removeAllListeners,
   emit,
   create,
   once,
@@ -75,6 +77,100 @@ describe('event-emitter', () => {
     });
   });
 
+  describe('off', () => {
+    it('should remove only the given handler', () => {
+      const ee = create();
+      const handler1 = vi.fn();
+      const handler2 = vi.fn();
+      on(ee, 'a', handler1);
+      on(ee, 'a', handler2);
+      off(ee, 'a', handler1);
+      emit(ee, 'a');
+      expect(handler1).not.toHaveBeenCalled();
+      expect(handler2).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remove every handler of a key when no handler is given', () => {
+      const ee = create();
+      const handler1 = vi.fn();
+      const handler2 = vi.fn();
+      const otherKey = vi.fn();
+      on(ee, 'a', handler1);
+      on(ee, 'a', handler2);
+      on(ee, 'b', otherKey);
+      off(ee, 'a');
+      emit(ee, 'a');
+      emit(ee, 'b');
+      expect(handler1).not.toHaveBeenCalled();
+      expect(handler2).not.toHaveBeenCalled();
+      expect(otherKey).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remove every listener of every key when no key is given', () => {
+      const ee = create();
+      const handlerA = vi.fn();
+      const handlerB = vi.fn();
+      on(ee, 'a', handlerA);
+      on(ee, 'b', handlerB);
+      off(ee);
+      emit(ee, 'a');
+      emit(ee, 'b');
+      expect(handlerA).not.toHaveBeenCalled();
+      expect(handlerB).not.toHaveBeenCalled();
+    });
+
+    it('should be a no-op for a key without listeners', () => {
+      const ee = create();
+      expect(() => off(ee, 'missing')).not.toThrow();
+      expect(() => off(ee, 'missing', () => {})).not.toThrow();
+    });
+
+    it('should be a no-op for a handler that was never added', () => {
+      const ee = create();
+      const handler = vi.fn();
+      on(ee, 'a', handler);
+      off(ee, 'a', () => {});
+      emit(ee, 'a');
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('removeAllListeners', () => {
+    it('should remove every handler of a key', () => {
+      const ee = create();
+      const handler1 = vi.fn();
+      const handler2 = vi.fn();
+      const otherKey = vi.fn();
+      on(ee, 'a', handler1);
+      on(ee, 'a', handler2);
+      on(ee, 'b', otherKey);
+      removeAllListeners(ee, 'a');
+      emit(ee, 'a');
+      emit(ee, 'b');
+      expect(handler1).not.toHaveBeenCalled();
+      expect(handler2).not.toHaveBeenCalled();
+      expect(otherKey).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remove every listener of every key when no key is given', () => {
+      const ee = create();
+      const handlerA = vi.fn();
+      const handlerB = vi.fn();
+      on(ee, 'a', handlerA);
+      on(ee, 'b', handlerB);
+      removeAllListeners(ee);
+      emit(ee, 'a');
+      emit(ee, 'b');
+      expect(handlerA).not.toHaveBeenCalled();
+      expect(handlerB).not.toHaveBeenCalled();
+    });
+
+    it('should be a no-op for a key without listeners', () => {
+      const ee = create();
+      expect(() => removeAllListeners(ee, 'missing')).not.toThrow();
+    });
+  });
+
   describe('emitError', () => {
     it('should call error handler when emitError', () => {
       const ee = create();
@@ -110,6 +206,27 @@ describe('event-emitter', () => {
       ee.on('a', handler);
       ee.emit('a');
       expect(handler).toHaveBeenCalled();
+    });
+
+    it('should remove listeners via bound off', () => {
+      const ee = createAndBind();
+      const handler = vi.fn();
+      const handler2 = vi.fn();
+      ee.on('a', handler);
+      ee.on('a', handler2);
+      ee.off('a', handler);
+      ee.emit('a');
+      expect(handler).not.toHaveBeenCalled();
+      expect(handler2).toHaveBeenCalledTimes(1);
+    });
+
+    it('should remove every handler of a key via bound off without handler', () => {
+      const ee = createAndBind();
+      const handler = vi.fn();
+      ee.on('a', handler);
+      ee.off('a');
+      ee.emit('a');
+      expect(handler).not.toHaveBeenCalled();
     });
   });
 });

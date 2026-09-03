@@ -39,6 +39,29 @@ This lib support [these browsers or devices](.broserslistrc) with [these methods
 
 Wildcard subscriptions (e.g. `on(ee, '*', handler)`) are not supported by design. Path-level or hierarchical subscriptions are a consumer-side concern — for example, react-f0rm builds them on top of this emitter via `onPathEvent`.
 
+## API
+
+### Unsubscribing
+
+`on`/`once` return an `OffFunction` that removes that exact subscription:
+
+```js
+const off = on(ee, 'message', handler);
+off(); // removes this exact subscription
+```
+
+Additionally, `off` and `removeAllListeners` remove listeners in bulk:
+
+```js
+off(ee, 'message', handler); // removes one exact subscription
+off(ee, 'message'); // removes every 'message' listener
+off(ee); // removes every listener of every key
+removeAllListeners(ee, 'message'); // same as off(ee, 'message')
+removeAllListeners(ee); // same as off(ee)
+```
+
+Both are no-ops for keys or handlers that were never subscribed.
+
 ## Workflow
 
 ```bash

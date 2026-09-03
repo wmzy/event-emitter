@@ -30,6 +30,25 @@ export function on(ee, key, handler) {
   return () => set.delete(handler);
 }
 
+export function off(ee, key, handler) {
+  if (key === undefined) {
+    ee.clear();
+    return;
+  }
+  const set = ee.get(key);
+  if (!set) return;
+  if (handler === undefined) {
+    ee.delete(key);
+    return;
+  }
+  set.delete(handler);
+}
+
+export function removeAllListeners(ee, key) {
+  if (key === undefined) ee.clear();
+  else ee.delete(key);
+}
+
 export function onError(ee, handler) {
   return on(ee, errorEvent, handler);
 }
@@ -59,6 +78,7 @@ export function createAndBind() {
     emit: bind(emit),
     emitError: bind(emitError),
     on: bind(on),
+    off: bind(off),
     onError: bind(onError),
     once: bind(once),
     onceError: bind(onceError)
