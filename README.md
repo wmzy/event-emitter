@@ -91,6 +91,16 @@ The gate is `process.env.NODE_ENV !== 'production'` (also silent when
 browser). Production builds skip the whole check; `on` only pays a single
 boolean test.
 
+### Listener changes during emit
+
+`emit` iterates the key's handler set with `Set` semantics:
+
+- a listener **added** while an emit is running **is** invoked by that same
+  emit (Set iteration visits entries appended mid-iteration);
+- a listener **removed** before the iteration reaches it is skipped;
+- removing a whole key (`off(ee, key)` / `removeAllListeners(ee, key)`) does
+  **not** stop an emit that is already running.
+
 ## Workflow
 
 ```bash

@@ -84,6 +84,39 @@ describe('event-emitter', () => {
       emit(ee, 'a');
       expect(handler).not.toHaveBeenCalled();
     });
+
+    it('should call a listener added during an emit in that same emit', () => {
+      const ee = create();
+      const late = vi.fn();
+      on(ee, 'a', () => {
+        on(ee, 'a', late);
+      });
+      emit(ee, 'a');
+      expect(late).toHaveBeenCalledTimes(1);
+      emit(ee, 'a');
+      expect(late).toHaveBeenCalledTimes(2);
+    });
+
+    it('should skip a listener removed before the iteration reaches it', () => {
+      const ee = create();
+      const late = vi.fn();
+      let off = () => {};
+      on(ee, 'a', () => off());
+      off = on(ee, 'a', late);
+      emit(ee, 'a');
+      expect(late).not.toHaveBeenCalled();
+    });
+
+    it('should not stop an in-flight emit when a whole key is removed', () => {
+      const ee = create();
+      const late = vi.fn();
+      on(ee, 'a', () => removeAllListeners(ee, 'a'));
+      on(ee, 'a', late);
+      emit(ee, 'a');
+      expect(late).toHaveBeenCalledTimes(1);
+      emit(ee, 'a');
+      expect(late).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('off', () => {

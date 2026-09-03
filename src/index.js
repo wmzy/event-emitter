@@ -53,6 +53,10 @@ export function create() {
 // remaining handlers still run, then reported through emitError (the
 // errorEvent channel). If no error handler is subscribed either, the first
 // collected error is rethrown to the emit caller instead of being swallowed.
+// Iteration follows Set semantics: a listener added while this emit runs is
+// still visited by that same emit, and a listener removed before it is
+// visited is skipped. Removing a whole key (off/removeAllListeners) does not
+// affect an emit already in flight.
 export function emit(ee, key, ...args) {
   const set = ee.get(key);
   if (!set || !set.size) return;
